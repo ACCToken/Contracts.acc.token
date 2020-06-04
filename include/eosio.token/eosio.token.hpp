@@ -30,9 +30,10 @@ namespace eosio
 	public:
 		using contract::contract;
 
-		static constexpr uint64_t milliseconds_per_day = 600 * 1000;
-		//static constexpr uint64_t milliseconds_per_day = 24 * 3600 * 1000;
+		// static constexpr uint64_t milliseconds_per_day = 600 * 1000;
+		static constexpr uint64_t milliseconds_per_day = 24 * 3600 * 1000;
 		static constexpr eosio::name active_permission{"active"_n};
+		static constexpr eosio::name system_account{"acc"_n};
 		/**
 		 * Create action.
 		 *
@@ -135,6 +136,15 @@ namespace eosio
 		[[eosio::action]]
 		void setrelease(const name& owner, const asset& release_per_day, const uint64_t start_date, const uint32_t released_days);
 
+		[[eosio::action]]
+		void dailyissue(const uint64_t& id, const name& receiver, const asset& quantity);
+
+		[[eosio::action]]
+		void switchdlyiss(const uint64_t& id, const uint8_t& status);
+
+		[[eosio::action]]
+		void setdlyiss(const uint64_t& id, const name& receiver, const asset& issue_per_day, const uint64_t start_date, const uint32_t issued_days);
+
 		/**
 		 * Get supply method.
 		 *
@@ -205,6 +215,21 @@ namespace eosio
 			}
 		};
 
+		struct [[eosio::table]] daily_issue
+		{
+			uint64_t id;
+			uint8_t status;
+			name receiver;
+			asset issue_per_day;
+			uint64_t start_issue_date;
+			uint32_t issued_days;
+
+			uint64_t primary_key() const
+			{
+				return id;
+			}
+		};
+
 		struct [[eosio::table]] currency_stats
 		{
 			asset supply;
@@ -220,6 +245,8 @@ namespace eosio
 		typedef eosio::multi_index<"accounts"_n, account> accounts;
 		typedef eosio::multi_index<"stat"_n, currency_stats> stats;
 		typedef eosio::multi_index<"lock"_n, account_lock> locks;
+		typedef eosio::multi_index<"dailyissue"_n, daily_issue> dailyissues;
+		
 
 		void sub_balance(const name& owner, const asset& value);
 
@@ -227,6 +254,9 @@ namespace eosio
 
 		void deferred_release(const name& owner, const asset& release_quantity,
 				const uint64_t& start_date, const uint32_t& released_days);
+
+		void deferred_issue(const uint64_t &id, const name &receiver, const asset &quantity,
+							   const uint64_t &start_date, const uint32_t &issued_days);
 	};
 	/** @}*/ // end of @defgroup eosiotoken eosio.token
 } /// namespace eosio

@@ -86,6 +86,54 @@
             ]
         },
         {
+            "name": "daily_issue",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "status",
+                    "type": "uint8"
+                },
+                {
+                    "name": "receiver",
+                    "type": "name"
+                },
+                {
+                    "name": "issue_per_day",
+                    "type": "asset"
+                },
+                {
+                    "name": "start_issue_date",
+                    "type": "uint64"
+                },
+                {
+                    "name": "issued_days",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "dailyissue",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "receiver",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
             "name": "dailyrelease",
             "base": "",
             "fields": [
@@ -178,6 +226,32 @@
             ]
         },
         {
+            "name": "setdlyiss",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "receiver",
+                    "type": "name"
+                },
+                {
+                    "name": "issue_per_day",
+                    "type": "asset"
+                },
+                {
+                    "name": "start_date",
+                    "type": "uint64"
+                },
+                {
+                    "name": "issued_days",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
             "name": "setrelease",
             "base": "",
             "fields": [
@@ -196,6 +270,20 @@
                 {
                     "name": "released_days",
                     "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "switchdlyiss",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "status",
+                    "type": "uint8"
                 }
             ]
         },
@@ -234,6 +322,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "dailyissue",
+            "type": "dailyissue",
+            "ricardian_contract": ""
+        },
+        {
             "name": "dailyrelease",
             "type": "dailyrelease",
             "ricardian_contract": ""
@@ -264,8 +357,18 @@
             "ricardian_contract": ""
         },
         {
+            "name": "setdlyiss",
+            "type": "setdlyiss",
+            "ricardian_contract": ""
+        },
+        {
             "name": "setrelease",
             "type": "setrelease",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "switchdlyiss",
+            "type": "switchdlyiss",
             "ricardian_contract": ""
         },
         {
@@ -278,6 +381,13 @@
         {
             "name": "accounts",
             "type": "account",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "dailyissue",
+            "type": "daily_issue",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

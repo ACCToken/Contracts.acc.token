@@ -252,6 +252,8 @@ namespace eosio
 
 		void add_balance(const name& owner, const asset& value, const name& ram_payer);
 
+		void common_issue(const name& to, const asset& quantity, const string& memo, const bool& is_auth);
+
 		void deferred_release(const name& owner, const asset& release_quantity,
 				const uint64_t& start_date, const uint32_t& released_days);
 

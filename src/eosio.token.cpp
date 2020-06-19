@@ -28,28 +28,8 @@ namespace eosio
 
 	void token::issue(const name &to, const asset &quantity, const string &memo)
 	{
-		auto sym = quantity.symbol;
-		check(sym.is_valid(), "invalid symbol name");
-		check(memo.size() <= 256, "memo has more than 256 bytes");
-
-		stats statstable(get_self(), sym.code().raw());
-		auto existing = statstable.find(sym.code().raw());
-		check(existing != statstable.end(), "token with symbol does not exist, create token before issue");
-		const auto &st = *existing;
-		//check(to == st.issuer, "tokens can only be issued to issuer account");
-
-		require_auth(st.issuer);
-		check(quantity.is_valid(), "invalid quantity");
-		check(quantity.amount > 0, "must issue positive quantity");
-
-		check(quantity.symbol == st.supply.symbol, "symbol precision mismatch");
-		check(quantity.amount <= st.max_supply.amount - st.supply.amount, "quantity exceeds available supply");
-
-		statstable.modify(st, same_payer, [&](auto &s) {
-			s.supply += quantity;
-		});
-
-		add_balance(to, quantity, st.issuer);
+		common_issue(to, quantity, memo, false);
+		require_recipient(to);
 	}
 
 	void token::retire(const asset &quantity, const string &memo)
@@ -167,6 +147,32 @@ namespace eosio
 		acnts.erase(it);
 	}
 
+	void token::common_issue(const name &to, const asset &quantity, const string &memo, const bool &is_auth)
+	{
+		auto sym = quantity.symbol;
+		check(sym.is_valid(), "invalid symbol name");
+		check(memo.size() <= 256, "memo has more than 256 bytes");
+
+		stats statstable(get_self(), sym.code().raw());
+		auto existing = statstable.find(sym.code().raw());
+		check(existing != statstable.end(), "token with symbol does not exist, create token before issue");
+		const auto &st = *existing;
+		//check(to == st.issuer, "tokens can only be issued to issuer account");
+
+		if(!is_auth) require_auth(st.issuer);
+		
+		check(quantity.is_valid(), "invalid quantity");
+		check(quantity.amount > 0, "must issue positive quantity");
+
+		check(quantity.symbol == st.supply.symbol, "symbol precision mismatch");
+		check(quantity.amount <= st.max_supply.amount - st.supply.amount, "quantity exceeds available supply");
+
+		statstable.modify(st, same_payer, [&](auto &s) {
+			s.supply += quantity;
+		});
+
+		add_balance(to, quantity, st.issuer);
+	}
 #pragma endregion
 
 #pragma region lock
@@ -288,9 +294,12 @@ namespace eosio
 		check(dlyiss_itr->issue_per_day == quantity, "setting changed error.");
 		check(dlyiss_itr->receiver == receiver, "setting changed error.");
 
+		require_recipient(receiver);
+
 		string memo = "dailyissue id:" + std::to_string(id);
-		token::issue_action issue_act{get_self(), {{token::system_account, token::active_permission}}};
-		issue_act.send(receiver, quantity, memo);
+		// token::issue_action issue_act{get_self(), {{token::system_account, token::active_permission}}};
+		// issue_act.send(receiver, quantity, memo);
+		common_issue(receiver, quantity, memo, true);
 
 		// token::transfer_action transfer_act{get_self(), {{get_self(), token::active_permission}}};
 		// transfer_act.send(get_self(), receiver, quantity, memo);
